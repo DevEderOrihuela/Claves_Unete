@@ -4123,8 +4123,6 @@
 "71215277": "TUYYO2025",
 "42550223": "Peru2020#"
   
-<img width="324" height="32766" alt="image" src="https://github.com/user-attachments/assets/61006253-32f1-4aa0-8600-deaadc6394a2" />
-
     };
 
     const chat = document.getElementById('chat');
