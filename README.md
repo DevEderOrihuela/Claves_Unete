@@ -34,7 +34,7 @@
     const mapa = {
       "12345678": "clave2025",
       "87654321": "miPass123",
-      "55555555": "superclave"
+      "55555555": "superclave",
       "71272057": "987654321",
       "47963359": "Tengoganasdeti1",
       "45777896": "brujita8",
