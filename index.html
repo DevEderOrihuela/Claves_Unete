@@ -1,37 +1,112 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>ChatBot DNI (local)</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChatBot DNI → Contraseña</title>
   <style>
-    /* estilos cortos (igual que antes) */
-    body{font-family:Arial;margin:0;display:flex;justify-content:center;align-items:center;height:100vh;background:#f4f6fb}
-    .card{width:100%;max-width:720px;background:white;border-radius:10px;box-shadow:0 6px 24px rgba(30,40,60,0.08);overflow:hidden}
-    header{padding:18px 20px;border-bottom:1px solid #eef2f8}
-    .chat{height:360px;padding:18px;overflow:auto}
-    .bubble{display:inline-block;max-width:78%;margin:8px 0;padding:10px 12px;border-radius:12px;line-height:1.3}
-    .bot{background:#eef6ff}
-    .user{background:#f3f3f3}
-    .controls{display:flex;gap:8px;padding:14px;border-top:1px solid #eef2f8}
-    input[type=text]{flex:1;padding:10px;border-radius:8px;border:1px solid #d7dce6}
-    button{padding:10px;border-radius:8px;border:none;background:#0b69ff;color:white}
-    .copy-btn{background:#fff;border:1px solid #d0d7e6;color:#0b69ff;padding:6px 8px;border-radius:6px;cursor:pointer}
+    body {
+      font-family: "Segoe UI", Arial;
+      background-color: #e9eef4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .chat-container {
+      width: 360px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .chat-header {
+      background: #0078d7;
+      color: white;
+      text-align: center;
+      padding: 15px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .message {
+      max-width: 80%;
+      padding: 10px 14px;
+      border-radius: 16px;
+      word-wrap: break-word;
+    }
+
+    .bot {
+      background: #f1f0f0;
+      align-self: flex-start;
+    }
+
+    .user {
+      background: #0078d7;
+      color: white;
+      align-self: flex-end;
+    }
+
+    .chat-input {
+      display: flex;
+      border-top: 1px solid #ddd;
+      padding: 10px;
+      background: #f8f8f8;
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      outline: none;
+    }
+
+    .chat-input button {
+      margin-left: 10px;
+      padding: 8px 14px;
+      background: #0078d7;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+
+    .chat-input button:hover {
+      background: #005ea3;
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <header><h1>ChatBot DNI → Contraseña (Local)</h1></header>
-    <div class="chat" id="chat"><div class="bubble bot">Ingresa un DNI de 8 dígitos.</div></div>
-    <div class="controls">
-      <input id="dniInput" maxlength="8" placeholder="12345678" />
-      <button id="sendBtn">Enviar</button>
+
+  <div class="chat-container">
+    <div class="chat-header">🔐 ChatBot DNI → Contraseña</div>
+    <div class="chat-messages" id="chat">
+      <div class="message bot">Hola 👋, ingresa tu DNI (8 dígitos) para ver tu contraseña.</div>
+    </div>
+    <div class="chat-input">
+      <input id="dniInput" type="text" maxlength="8" placeholder="Escribe tu DNI..." />
+      <button onclick="enviar()">Enviar</button>
     </div>
   </div>
 
-<script>
+  <script>
 // --- MAPEO DNI -> CONTRASEÑA (edítalo aquí) ---
-const dniPasswords = {
+const baseDatos = {
   '12345678': 'P@ssw0rd*1',
   '87654321': 'Secreta&2025',
   '11112222': 'Clave%Abc(12)',
@@ -4127,44 +4202,42 @@ const dniPasswords = {
 };
 // -----------------------------------------------
 
-const chat = document.getElementById('chat');
-const input = document.getElementById('dniInput');
-const sendBtn = document.getElementById('sendBtn');
+ const chat = document.getElementById("chat");
+    const input = document.getElementById("dniInput");
 
-function appendBubble(txt, who='bot', html=false){
-  const d = document.createElement('div');
-  d.className = 'bubble ' + (who==='bot' ? 'bot' : 'user');
-  if(html) d.innerHTML = txt; else d.textContent = txt;
-  chat.appendChild(d);
-  chat.scrollTop = chat.scrollHeight;
-}
+    function agregarMensaje(texto, tipo) {
+      const msg = document.createElement("div");
+      msg.classList.add("message", tipo);
+      msg.textContent = texto;
+      chat.appendChild(msg);
+      chat.scrollTop = chat.scrollHeight;
+    }
 
-sendBtn.addEventListener('click', onSend);
-input.addEventListener('keydown', e => { if(e.key==='Enter') onSend(); });
+    function enviar() {
+      const dni = input.value.trim();
+      if (dni.length !== 8 || isNaN(dni)) {
+        agregarMensaje("Por favor ingresa un DNI válido de 8 dígitos.", "bot");
+        input.value = "";
+        return;
+      }
 
-function onSend(){
-  const dni = input.value.trim();
-  if(!/^\d{8}$/.test(dni)){ appendBubble('DNI inválido. 8 dígitos.', 'bot'); return; }
-  appendBubble(dni, 'user');
-  const pwd = dniPasswords[dni];
-  if(pwd){
-    const html = `<div><strong>DNI:</strong> ${dni}</div><div><strong>Contraseña:</strong> <code id="pwd">${pwd}</code></div>
-                  <div style="margin-top:6px"><button class="copy-btn" id="copyBtn">Copiar</button></div>`;
-    appendBubble(html, 'bot', true);
-    setTimeout(()=> {
-      const copyBtn = document.getElementById('copyBtn');
-      copyBtn.addEventListener('click', ()=> {
-        navigator.clipboard.writeText(pwd).then(()=> {
-          copyBtn.textContent = 'Copiado';
-          setTimeout(()=> copyBtn.textContent='Copiar',1200);
-        });
-      });
-    },50);
-  } else {
-    appendBubble('❌ DNI no encontrado', 'bot');
-  }
-  input.value=''; input.focus();
-}
-</script>
+      agregarMensaje(dni, "user");
+
+      setTimeout(() => {
+        if (baseDatos[dni]) {
+          agregarMensaje(`🔑 Tu contraseña es: ${baseDatos[dni]}`, "bot");
+        } else {
+          agregarMensaje("❌ DNI no encontrado. Verifica e inténtalo nuevamente.", "bot");
+        }
+      }, 700);
+
+      input.value = "";
+    }
+
+    input.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") enviar();
+    });
+  </script>
+
 </body>
 </html>
